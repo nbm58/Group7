@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * @author nbmax
+ *
+ */
+module ChatProject {
+}
