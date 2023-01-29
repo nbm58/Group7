@@ -1,10 +1,13 @@
-package chat;
-
+package utils;
 import java.io.Serializable;
 
 public class NodeInfo implements Serializable
 {
-    String ipAddress;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	String ipAddress;
     int portNumber;
     String name = null;
 

@@ -1,5 +1,4 @@
-package message;
-
+package utils;
 /**
  * Interface [MessageTypes] Defines the different message types used in the application.
  * Any entity using objects of class Message needs to implement this interface.
