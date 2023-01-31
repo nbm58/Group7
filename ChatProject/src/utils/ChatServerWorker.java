@@ -88,7 +88,7 @@ public class ChatServerWorker extends Thread implements MessageTypes
 				 try
 				 {
 					 // open socket to one chat client at a time
-					 chatConnection = new Socket(participantInfo.address, participantInfo.port);
+					 chatConnection = new Socket(participantInfo.getAddress(), participantInfo.getPort());
 					 
 					 // open object streams
 					 writeToNet = new ObjectOutputStream(chatConnection.getOutputStream());
@@ -113,9 +113,9 @@ public class ChatServerWorker extends Thread implements MessageTypes
 		 case SHUTDOWN:
 			 // remove this participant's info
 			 NodeInfo leavingParticipantInfo = (NodeInfo) message.getContent();
-			 if (ChatServer.participants.remove(leavingParticipantInfo))
+			 if (leavingParticipantInfo.delete(ChatServer.participants) != null)
 			 {
-				 System.err.println(leavingParticipantInfo.getName() + " removed");
+				 System.out.println(leavingParticipantInfo.getName() + " removed");
 			 }
 			 else
 			 {
@@ -148,7 +148,7 @@ public class ChatServerWorker extends Thread implements MessageTypes
 				 try
 				 {
 					// open connection to client
-					 chatConnection = new Socket(participantInfo.address, participantInfo.port);
+					 chatConnection = new Socket(participantInfo.getAddress(), participantInfo.getPort());
 					 
 					 // open object streams
 					 writeToNet = new ObjectOutputStream(chatConnection.getOutputStream());

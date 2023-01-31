@@ -39,19 +39,19 @@ public class NodeInfo implements Serializable
     }
     
     // Compare two nodes based on their IP address, port number, & name
-    public boolean equals(NodeInfo firstNode, NodeInfo secondNode)
+    public boolean equals(NodeInfo otherNode)
     {
-    	return firstNode.getAddress() == secondNode.getAddress()
-    			&& firstNode.getPort() == secondNode.getPort()
-    			&& firstNode.getName() == secondNode.getName();
+    	return this.getAddress() == otherNode.getAddress()
+    			&& this.getPort() == otherNode.getPort()
+    			&& this.getName() == otherNode.getName();
     }
     
     // Delete a specified node from a specified list; return the deleted node
-    public NodeInfo delete(ArrayList<NodeInfo> nodeList, NodeInfo nodeToDelete)
+    public NodeInfo delete(ArrayList<NodeInfo> nodeList)
     {
     	for(int i = 0; i < nodeList.size(); i++)
     	{
-    		if (equals(nodeList.get(i), nodeToDelete))
+    		if (this.equals(nodeList.get(i)))
     		{
     			nodeList.remove(i);
     			
