@@ -53,9 +53,7 @@ public class NodeInfo implements Serializable
     	{
     		if (this.equals(nodeList.get(i)))
     		{
-    			nodeList.remove(i);
-    			
-    			return nodeList.get(i);
+    			return nodeList.remove(i);
     		}
     	}
     	

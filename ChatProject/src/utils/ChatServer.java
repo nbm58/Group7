@@ -10,7 +10,7 @@ public class ChatServer implements Runnable
 	 static ServerSocket serverSocket = null;
 	 public static NodeInfo myNodeInfo = null;
 	 public static NodeInfo serverNodeInfo = null;
-	 public static ArrayList<NodeInfo> participants;
+	 public static ArrayList<NodeInfo> participants = new ArrayList<NodeInfo>();
 	 
 	 public ChatServer(String propertiesFile)
 	 {
@@ -80,7 +80,7 @@ public class ChatServer implements Runnable
 	 {
 		 try
 		 {
-			 serverSocket = new ServerSocket(serverNodeInfo.port);
+			 serverSocket = new ServerSocket(serverNodeInfo.getPort());
 			 serverSocket.setReuseAddress(true);
 			 
 			 while (true)

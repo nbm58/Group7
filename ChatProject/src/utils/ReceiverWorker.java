@@ -64,7 +64,7 @@ public class ReceiverWorker extends Thread implements MessageTypes
 	  
 			case NOTE:
 				// Display message
-				System.out.println((String) message.getContent());
+				System.out.println(message.getContent());
 				try {
 					serverConnection.close();
 				}

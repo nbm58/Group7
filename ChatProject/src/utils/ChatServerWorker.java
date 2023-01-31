@@ -76,7 +76,7 @@ public class ChatServerWorker extends Thread implements MessageTypes
 		 // NOTE functionality
 		 case NOTE:
 			 // just display note
-			 System.out.println((String) message.getContent());
+			 System.out.println(message.getContent());
 			 
 			 // run through all participants and send the note to each one
 			 participantsIterator = ChatServer.participants.iterator();
