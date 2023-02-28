@@ -1,37 +1,48 @@
 package utils;
+
 import java.io.Serializable;
 
 public class NodeInfo implements Serializable
 {
-	private static final long serialVersionUID = 1L;
-	String ipAddress;
-    int portNumber;
+
+	String address;
+    int port;
     String name = null;
 
-    public NodeInfo(String ipAddress, int portNumber, String name)
+    public NodeInfo(String address, int port, String name)
     {
-        this.ipAddress = ipAddress;
-        this.portNumber = portNumber;
+        this.address = address;
+        this.port = port;
         this.name = name;
     }
 
-    public NodeInfo(String ipAddress, int portNumber)
+    public NodeInfo(String address, int port)
     {
-        this(ipAddress, portNumber, null);
+        this(address, port, null);
     }
 
     String getAddress()
     {
-        return this.ipAddress;
+        return this.address;
     }
 
     int getPort()
     {
-        return this.portNumber;
+        return this.port;
     }
 
     String getName()
     {
         return this.name;
     }
+    
+ // Compare two nodes based on their IP address, port number, & name
+    public boolean equals(NodeInfo firstNode, NodeInfo secondNode)
+    {
+    	return firstNode.getAddress() == secondNode.getAddress()
+    			&& firstNode.getPort() == secondNode.getPort()
+    			&& firstNode.getName() == secondNode.getName();
+    }
+    
+    
 }

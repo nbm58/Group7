@@ -1,42 +1,55 @@
 package utils;
 
-
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Properties;
 
-public class ChatServer extends Thread
+public class ChatServer implements Runnable
 {
 	 static ServerSocket serverSocket = null;
-	 static Receiver receiver = null;
-	 static Sender sender = null;
 	 public static NodeInfo myNodeInfo = null;
 	 public static NodeInfo serverNodeInfo = null;
+	 public static ArrayList<NodeInfo> participants = new ArrayList<NodeInfo>();
 	 
 	 public ChatServer(String propertiesFile)
 	 {
-		 // Get properties from properties file
+		 //Get properties from properties file
 		 Properties properties = null;
 		 try
-		 {		  
+		 {
 			 properties = new PropertyHandler(propertiesFile);
 		 }
-		 catch (IOException ex)
+		 catch(IOException ex)
 		 {
-			 System.err.println("Failure getting properties");
-			 System.exit(1); 
+			 System.out.println("Failure getting properties");
+			 System.exit(1);
 		 }
-		 	 
-	  // Get user's name
+		        
+		 //get my receiver port number
+		 int myPort = 0;
+		 try
+		 {
+			 myPort = Integer.parseInt(properties.getProperty("MY_PORT"));
+		 }
+		 catch(NumberFormatException ex)
+		 {
+			 System.out.println("Failure getting port");
+			 System.exit(1);
+		 }
+		    
+		 //Get my name
 		 String myName = properties.getProperty("MY_NAME");
 		 if (myName == null)
 		 {
-			 System.err.println("Failure getting name");
+			 System.out.println("Failure getting name");
 			 System.exit(1);
 		 }
- 
-		 // Get server default port
+		    
+		 //create my own node info
+		 myNodeInfo = new NodeInfo(NetworkUtilities.getMyIP(), myPort, myName);
+		    
+		 //get server default port
 		 int serverPort = 0;
 		 try
 		 {
@@ -44,22 +57,18 @@ public class ChatServer extends Thread
 		 }
 		 catch (NumberFormatException ex)
 		 {
-			 // Log failure to read server port
-			 System.err.println("Failure getting server port");
-			 System.exit(1);
+			 System.out.println("Failed to get server port.");
 		 }
-	 
-		 // Get server default IP
+		
+		 //Get server default IP
 		 String serverIP = null;
 		 serverIP = properties.getProperty("SERVER_IP");
-		 if(serverIP == null)
+		 if (serverIP == null)
 		 {
-			 // Log failure to read server IP
-			 System.err.println("Failure getting server IP");
-			 System.exit(1);
+			 System.out.println("Failed to get server IP.");
 		 }
-	 
-		 // Create server default connectivity information
+		
+		 //create server default connectivity information
 		 if(serverPort != 0 && serverIP != null)
 		 {
 			 serverNodeInfo = new NodeInfo(serverIP, serverPort);
@@ -69,37 +78,41 @@ public class ChatServer extends Thread
 	 @Override
 	 public void run() 
 	 {
-		 System.out.println("{SERVER} Boot");
-		 try 
+		 try
 		 {
 			 serverSocket = new ServerSocket(serverNodeInfo.getPort());
-			 System.out.println("{SERVER} server socket created, listening on port " 
-			  								+ serverNodeInfo.getPort());
-			 System.out.println("{SERVER} Server Waiting for Connections..");
-			 (new ChatServerWorker(serverSocket.accept())).start();
-		 }  
-		 catch (IOException e) 
+			 serverSocket.setReuseAddress(true);
+			 
+			 while (true)
+			 {
+				 try
+				 {
+					 (new ChatServerWorker(serverSocket.accept())).start();
+				 }
+				 catch (IOException ex)
+				 {
+					 System.err.println("[ChatServer.run] Warning: Error accepting client.");
+				 }
+			 } 
+		 }
+		 catch (IOException e)
 		 {
-			 System.err.println("{SERVER} Failure to create Socket in chatserver run");
+			 System.err.println("Failed to create server socket or accept client-server connection");
 		 }
 	 }
 	
 	 public static void main(String[] args)
 	 {	  
 		 String propertiesFile = null;
-		 
-		 // Get the configuration file ("db.properties" by default
 		 try
 		 {
 			 propertiesFile = args[0];
 		 }
 		 catch (ArrayIndexOutOfBoundsException ex)
-		 {  
+		 {
 			 propertiesFile = "db.properties";
 		 }
-		  
-		 // Run the chat server
+		 System.out.println("{SERVER} Boot");
 		 (new ChatServer(propertiesFile)).run();
 	 }
-}   
-
+}

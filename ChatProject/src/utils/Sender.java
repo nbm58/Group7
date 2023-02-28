@@ -76,11 +76,14 @@ public class Sender extends Thread implements MessageTypes
 	
 					// Send join request
 					writeToNet.writeObject(new Message(JOIN, ChatClient.myNodeInfo));
+					
+					// close connection
+					serverConnection.close();
 				}
 				catch (IOException ex)
 				{
 					// Log failure to connect
-					System.err.println("{SENDER} Failure to write JOIN");
+					System.err.println("{SENDER} Failed to join server");
 					continue;
 				}
 				hasJoined = true;   

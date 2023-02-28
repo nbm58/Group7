@@ -72,7 +72,7 @@ public class ChatClient implements Runnable
         if(serverPort != 0 && serverIP != null)
         {
             serverNodeInfo = new NodeInfo(serverIP, serverPort);
-        } 
+        }
     }
     
     
