@@ -11,5 +11,6 @@ public interface MessageTypes {
     public static final int LEAVE        = 2;
     public static final int NOTE         = 3;
     public static final int SHUTDOWN     = 4;
-    public static final int SHUTDOWN_ALL = 5;    
+    public static final int SHUTDOWN_ALL = 5;
+    public static final int UPDATE_PARTICIPANTS = 6;
 }

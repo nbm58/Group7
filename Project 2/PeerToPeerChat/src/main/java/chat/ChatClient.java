@@ -15,12 +15,13 @@ public class ChatClient implements Runnable
     static Sender sender = null;
     
     public static NodeInfo myNodeInfo = null;
-    public static NodeInfo serverNodeInfo = null;
     
     public static ArrayList<NodeInfo> participants = new ArrayList<NodeInfo>();
     
     public ChatClient(String propertiesFile)
     {
+        int myPort = 0;
+
         // get properties from properties file
         Properties properties = null;
         try
@@ -32,19 +33,7 @@ public class ChatClient implements Runnable
             System.err.println("Failed to get properties " + ex);
             System.exit(1);
         }
-        
-        // get my receiver port number
-        int myPort = 0;
-        try
-        {
-            myPort = Integer.parseInt(properties.getProperty("MY_PORT"));
-        }
-        catch(NumberFormatException ex)
-        {
-            System.out.println("Failure getting port " + ex);
-            System.exit(1);
-        }
-            
+
         // get my name
         String myName = properties.getProperty("MY_NAME");
         if (myName == null)
@@ -55,31 +44,6 @@ public class ChatClient implements Runnable
             
         // create my own node info
         myNodeInfo = new NodeInfo(NetworkUtilities.getMyIP(), myPort, myName);
-            
-        // get server default port
-        int serverPort = 0;
-        try
-        {
-            serverPort = Integer.parseInt(properties.getProperty("SERVER_PORT"));
-        }
-        catch (NumberFormatException ex)
-        {
-            System.out.println("Failed to get server port. " + ex);
-        }
-        
-        // get server default IP
-        String serverIP = null;
-        serverIP = properties.getProperty("SERVER_IP");
-        if (serverIP == null)
-        {
-            System.out.println("Failed to get server IP.");
-        }
-        
-        // create server default connectivity information
-        if(serverPort != 0 && serverIP != null)
-        {
-            serverNodeInfo = new NodeInfo(serverIP, serverPort);
-        }
     }
     
     @Override

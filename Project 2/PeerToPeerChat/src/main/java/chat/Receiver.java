@@ -16,8 +16,10 @@ public class Receiver extends Thread
     {
         try
         {
-            receiverSocket = new ServerSocket(ChatClient.myNodeInfo.getPort());
-            System.out.println("{RECEIVER} Socket created, listening on port " + ChatClient.myNodeInfo.getPort());
+            receiverSocket = new ServerSocket(0);
+            System.out.println("{RECEIVER} Socket created, listening on port " + receiverSocket.getLocalPort());
+            
+            ChatClient.myNodeInfo.setPort(receiverSocket.getLocalPort());
         }
         catch (IOException ex)
         {
@@ -26,7 +28,7 @@ public class Receiver extends Thread
         }
 
         // Display listening on message, port
-        System.out.println("{RECEIVER} " + ChatClient.myNodeInfo.getName() + " listening on " + ChatClient.myNodeInfo.getAddress() + ":" + ChatClient.myNodeInfo.getPort());
+        System.out.println("{RECEIVER} " + ChatClient.myNodeInfo.getName() + " listening on " + ChatClient.myNodeInfo.getAddress() + ":" + receiverSocket.getLocalPort());
     }
 
     @Override

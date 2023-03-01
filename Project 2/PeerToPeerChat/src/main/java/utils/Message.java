@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Class [Message] Defines a generic Message that has a message type and content.
@@ -15,12 +16,18 @@ public class Message implements MessageTypes, Serializable {
     int type;
     // content that is specific to a certain message type
     Object content;
+    ArrayList<NodeInfo> participants;
 
     
     // constructor
     public Message(int type, Object content) {
         this.type = type;
         this.content = content;
+    }
+    
+    public Message(int type, ArrayList<NodeInfo> participants) {
+        this.type = type;
+        this.participants = participants;
     }
     
     // getters
@@ -32,5 +39,10 @@ public class Message implements MessageTypes, Serializable {
     public Object getContent()
     {
         return content;
+    }
+    
+    public ArrayList<NodeInfo> getParticipants()
+    {
+        return participants;
     }
 }

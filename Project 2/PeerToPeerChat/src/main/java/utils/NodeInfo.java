@@ -29,6 +29,11 @@ public class NodeInfo implements Serializable
     {
         return this.port;
     }
+    
+    public void setPort(int port)
+    {
+        this.port = port;
+    }
 
     public String getName()
     {
