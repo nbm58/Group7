@@ -1,9 +1,6 @@
 package chat;
 
-import java.io.IOException;
-
-import utils.PropertyHandler;
-import java.util.Properties;
+import java.util.Random;
 
 import java.util.ArrayList;
 
@@ -20,30 +17,17 @@ public class ChatClient implements Runnable
     
     public ChatClient(String propertiesFile)
     {
+        Random random = new Random();
+        int max = 999999;
+        int randomInteger = random.nextInt(max);
+        String randIntString = Integer.toString(randomInteger);
+        
         int myPort = 0;
-
-        // get properties from properties file
-        Properties properties = null;
-        try
-        {
-            properties = new PropertyHandler(propertiesFile);
-        }
-        catch (IOException ex)
-        {
-            System.err.println("Failed to get properties " + ex);
-            System.exit(1);
-        }
-
-        // get my name
-        String myName = properties.getProperty("MY_NAME");
-        if (myName == null)
-        {
-            System.out.println("Failure getting name");
-            System.exit(1);
-        }
-            
+        String myName = "User" + randIntString;
+        String myIP = NetworkUtilities.getMyIP();
+        
         // create my own node info
-        myNodeInfo = new NodeInfo(NetworkUtilities.getMyIP(), myPort, myName);
+        myNodeInfo = new NodeInfo(myIP, myPort, myName);
     }
     
     @Override
