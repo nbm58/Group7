@@ -23,7 +23,7 @@ public class ChatServer implements Runnable
 		 catch(IOException ex)
 		 {
 			 System.out.println("Failure getting properties");
-			 System.exit(1);
+			 System.exit(1); 
 		 }
 		        
 		 //get my receiver port number

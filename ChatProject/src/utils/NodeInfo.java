@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class NodeInfo implements Serializable
 {
@@ -9,7 +10,8 @@ public class NodeInfo implements Serializable
     int port;
     String name = null;
 
-    public NodeInfo(String address, int port, String name)
+    // Constructors
+    public NodeInfo(String ipAddress, int portNumber, String name)
     {
         this.address = address;
         this.port = port;
@@ -21,6 +23,7 @@ public class NodeInfo implements Serializable
         this(address, port, null);
     }
 
+    // Getters
     String getAddress()
     {
         return this.address;
@@ -36,13 +39,25 @@ public class NodeInfo implements Serializable
         return this.name;
     }
     
- // Compare two nodes based on their IP address, port number, & name
-    public boolean equals(NodeInfo firstNode, NodeInfo secondNode)
+    // Compare two nodes based on their IP address, port number, & name
+    public boolean equals(NodeInfo otherNode)
     {
-    	return firstNode.getAddress() == secondNode.getAddress()
-    			&& firstNode.getPort() == secondNode.getPort()
-    			&& firstNode.getName() == secondNode.getName();
+    	return this.getAddress() == otherNode.getAddress()
+    			&& this.getPort() == otherNode.getPort()
+    			&& this.getName() == otherNode.getName();
     }
     
-    
+    // Delete a specified node from a specified list; return the deleted node
+    public NodeInfo delete(ArrayList<NodeInfo> nodeList)
+    {
+    	for(int i = 0; i < nodeList.size(); i++)
+    	{
+    		if (this.equals(nodeList.get(i)))
+    		{
+    			return nodeList.remove(i);
+    		}
+    	}
+    	
+    	return null;
+    }
 }
