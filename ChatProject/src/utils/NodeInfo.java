@@ -1,36 +1,37 @@
 package utils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class NodeInfo implements Serializable
 {
-	private static final long serialVersionUID = 1L;
-	String ipAddress;
-    int portNumber;
+
+	String address;
+    int port;
     String name = null;
 
     // Constructors
     public NodeInfo(String ipAddress, int portNumber, String name)
     {
-        this.ipAddress = ipAddress;
-        this.portNumber = portNumber;
+        this.address = address;
+        this.port = port;
         this.name = name;
     }
 
-    public NodeInfo(String ipAddress, int portNumber)
+    public NodeInfo(String address, int port)
     {
-        this(ipAddress, portNumber, null);
+        this(address, port, null);
     }
 
     // Getters
     String getAddress()
     {
-        return this.ipAddress;
+        return this.address;
     }
 
     int getPort()
     {
-        return this.portNumber;
+        return this.port;
     }
 
     String getName()
