@@ -1,13 +1,15 @@
-package src.utils;
+package transaction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import server.*;
 
-public class Transaction {
+public class Transaction
+{
     //transaction ID and OCC specific transaction numbers
     int transactionID;
     int transactionNumber;
-    int lastComittedTransactionNumber;
+    int lastCommittedTransactionNumber;
 
     //the sets of tentative data
     ArrayList<Integer> readSet = new ArrayList<>();
@@ -17,11 +19,11 @@ public class Transaction {
 
     Transaction(int transactionID, int lastCommittedTransactionNumber)
     {
-     this.transactionID = transactionID;
-     this.lastComittedTransactionNumber = lastCommittedTransactionNumber;
+        this.transactionID = transactionID;
+        this.lastCommittedTransactionNumber = lastCommittedTransactionNumber;
     }
 
-    public int read (int accountNumber)
+    public int read(int accountNumber)
     {
         Integer balance;
 
@@ -41,37 +43,49 @@ public class Transaction {
         return balance;
     }
 
-    public int write (int accountNumber, int newBalance)
+    public int write(int accountNumber, int newBalance)
     {
-        int oldBalance = read)accountNumber);
+        int oldBalance = read(accountNumber);
 
         if(!writeSet.containsKey(accountNumber))
         {
-            writeSet.put(accountNumber,newBalance);
+            writeSet.put(accountNumber, newBalance);
         }
         return oldBalance;
     }
 
     public ArrayList getReadSet()
     {
-        return readSet;
+        return this.readSet;
     }
 
     public HashMap getWriteSet()
     {
-        return writeSet;
+        return this.writeSet;
     }
 
-    public getTransactionID()
+    public int getTransactionID()
     {
-        return transactionID;
+        return this.transactionID;
     }
 
-    public getTransactionNumber()
+    public int getTransactionNumber()
     {
-        return transactionNumber;
+        return this.transactionNumber;
     }
-
-
-
+    
+    public void setTransactionNumber(int transactionNumber)
+    {
+        this.transactionNumber = transactionNumber;
+    }
+    
+    public int getLastCommittedTransactionNumber()
+    {
+        return this.lastCommittedTransactionNumber;
+    }
+    
+    public void log(String logMessage)
+    {
+        log.append(logMessage);
+    }
 }
