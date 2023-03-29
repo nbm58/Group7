@@ -12,5 +12,5 @@ public interface MessageTypes {
     public static final int READ_REQUEST = 3;
     public static final int WRITE_REQUEST = 4;
     public static final int TRANSACTION_COMMITTED = 5;
-    public static final int TRANSACTION_ABORTED = 5;
+    public static final int TRANSACTION_ABORTED = 6;
 }
