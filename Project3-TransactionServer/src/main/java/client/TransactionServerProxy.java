@@ -8,7 +8,7 @@ import java.net.Socket;
 import message.*;
 
 
-public class TransactionServerProxy extends Thread implements MessageTypes, Runnable
+public class TransactionServerProxy implements MessageTypes, Runnable
 {
     int transactionNumber;
     Socket serverConnection;

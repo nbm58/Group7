@@ -6,9 +6,14 @@ public class AccountManager
 {
     protected HashMap<Integer, Integer> accounts;
     
-    public AccountManager()
+    public AccountManager(int numberOfAccounts, int startingBalance)
     {
         accounts = new HashMap<>();
+        
+        for (int index = 1; index <= numberOfAccounts; index++)
+        {
+            accounts.put(index, startingBalance);
+        }
     }
     
     public int read(int accountNumber)
@@ -18,6 +23,6 @@ public class AccountManager
     
     public void write(int accountNumber, int newBalance)
     {
-        accounts.put(accountNumber, newBalance);
+        accounts.replace(accountNumber, newBalance);
     }
 }

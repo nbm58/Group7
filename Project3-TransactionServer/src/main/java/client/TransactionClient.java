@@ -127,11 +127,17 @@ public class TransactionClient implements Runnable
     
     public class TransactionThread extends Thread implements MessageTypes, Runnable
     {
+        int transactionNumber;
+        
+        public TransactionThread(int transactionNumber)
+        {
+            this.transactionNumber = transactionNumber;
+        }
         
         @Override
         public void run()
         {
-            (new TransactionServerProxy()).run();
+            (new TransactionServerProxy(transactionNumber)).run();
         }
     }
     
@@ -142,21 +148,35 @@ public class TransactionClient implements Runnable
         
         for (int index = 0; index < numberOfTransactions; index++)
         {
-            (new TransactionServerProxy(index)).start();
+            (new TransactionThread(index)).start();
         }
+        
+        
     }
     
     public static void main(String[] args)
     {
-        String propertiesFile = null;
+        String clientPropertiesFile = null;
+        String serverPropertiesFile = null;
+        
         try
         {
-            propertiesFile = args[0];
+            clientPropertiesFile = args[0];
         }
         catch (ArrayIndexOutOfBoundsException ex)
         {
-            propertiesFile = "TransactionClientDefaults.properties";
+            clientPropertiesFile = "TransactionClient.properties";
         }
-        (new TransactionClient(propertiesFile)).run();
+        
+        try
+        {
+            serverPropertiesFile = args[1];
+        }
+        catch (ArrayIndexOutOfBoundsException ex)
+        {
+            serverPropertiesFile = "TransactionServer.properties";
+        }
+        
+        (new TransactionClient(clientPropertiesFile, serverPropertiesFile)).run();
     }
 }

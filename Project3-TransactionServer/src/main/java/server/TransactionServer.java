@@ -16,32 +16,62 @@ public class TransactionServer implements Runnable
     private boolean keepgoing = true;
     ServerSocket clientConnection;
     
-    public TransactionServer(String propertiesFile)
+    String myIP;
+    int myPort;
+    int numberOfAccounts;
+    int startingBalance;
+    
+    public TransactionServer(String serverPropertiesFile)
     {
-        accountManager = new AccountManager();
         transactionManager = new TransactionManager();
         
-        Properties properties = null;
+        Properties serverProperties = null;
         try
         {
-            properties = new PropertyHandler(propertiesFile);
+            serverProperties = new PropertyHandler(serverPropertiesFile);
         }
         catch (IOException ex)
         {
-            System.err.println("Could not open properties file" + ex);
+            System.err.println("Could not open server properties file" + ex);
+            System.exit(1);
+        }
+        
+        // get number of accounts
+        numberOfAccounts = 0;
+        try
+        {
+            numberOfAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_OF_ACCOUNTS"));
+        }
+        catch (NumberFormatException ex)
+        {
+            System.err.println("Error getting number of accounts: " + ex);
+            System.exit(1);
+        }
+        
+        // get starting balance
+        startingBalance = 0;
+        try
+        {
+            startingBalance = Integer.parseInt(serverProperties.getProperty("STARTING_BALANCE"));
+        }
+        catch (NumberFormatException ex)
+        {
+            System.err.println("Error getting starting balance: " + ex);
             System.exit(1);
         }
         
         try
         {
-            clientConnection = new ServerSocket(0);
-            System.out.println("[TS] Socket created, listening on port " + clientConnection.getLocalPort());
+            clientConnection = new ServerSocket(myPort);
+            System.out.println("[TS] Socket created, listening on port " + myPort);
         }
         catch (IOException ex)
         {
             // Log failure to create socket
-            System.out.println("[TS] Failure to create socket: " + ex);  
+            System.out.println("[TS] Failure to create socket: " + ex);
         }
+        
+        accountManager = new AccountManager(numberOfAccounts, startingBalance);
     }
     
     void openTransaction(int transactionID)
@@ -76,15 +106,15 @@ public class TransactionServer implements Runnable
     
     public static void main(String[] args)
     {
-        String propertiesFile = null;
+        String serverPropertiesFile = null;
         try
         {
-            propertiesFile = args[0];
+            serverPropertiesFile = args[0];
         }
         catch (ArrayIndexOutOfBoundsException ex)
         {
-            propertiesFile = "TransactionClientDefaults.properties";
+            serverPropertiesFile = "TransactionServer.properties";
         }
-        (new TransactionServer(propertiesFile)).run();
+        (new TransactionServer(serverPropertiesFile)).run();
     }
 }
