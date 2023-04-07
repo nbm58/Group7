@@ -11,15 +11,18 @@ import message.*;
 public class TransactionServerProxy implements MessageTypes, Runnable
 {
     int transactionNumber;
+    String serverIP;
+    int serverPort;
     Socket serverConnection;
     
-    public TransactionServerProxy(int transactionNumber)
+    public TransactionServerProxy(int transactionNumber, String serverIP, int serverPort)
     {
         this.transactionNumber = transactionNumber;
+        this.serverIP = serverIP;
+        this.serverPort = serverPort;
     }
     
-    @Override
-    public void run()
+    void openTransaction()
     {
         ObjectOutputStream writeToNet;
         ObjectInputStream readFromNet;
@@ -27,7 +30,7 @@ public class TransactionServerProxy implements MessageTypes, Runnable
         try
         {
             // Open connection to server
-            serverConnection = new Socket(/* serverIP */, /* serverSocket */);
+            serverConnection = new Socket(serverIP, serverPort);
 
             // Open object streams
             writeToNet = new ObjectOutputStream(serverConnection.getOutputStream());
@@ -35,14 +38,30 @@ public class TransactionServerProxy implements MessageTypes, Runnable
 
             // Send OPEN_TRANSACTION message
             writeToNet.writeObject(new Message(OPEN_TRANSACTION));
-
+        }
+        catch (IOException ex)
+        {
+            // Log failure to connect
+            System.err.println("[TSP] Error connecting to server, creating object streams, or closing connection: " + ex);
+        }
+    }
+    
+    void closeTransaction(int transactionID)
+    {
+        try
+        {
             // close connection
             serverConnection.close();
         }
         catch (IOException ex)
         {
-            // Log failure to connect
-            System.err.println("{SENDER} Error connecting to server, creating object streams, or closing connection" + ex);
+            System.err.println("[TSP] Error closing connection to server: " + ex);
         }
+    }
+    
+    @Override
+    public void run()
+    {
+        openTransaction();
     }
 }

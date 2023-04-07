@@ -14,7 +14,7 @@ public class TransactionServer implements Runnable
     public static AccountManager accountManager;
     public static TransactionManager transactionManager;
     private boolean keepgoing = true;
-    ServerSocket clientConnection;
+    static ServerSocket clientConnection = null;
     
     String myIP;
     int myPort;
@@ -25,6 +25,19 @@ public class TransactionServer implements Runnable
     {
         transactionManager = new TransactionManager();
         
+        try
+        {
+            clientConnection = new ServerSocket(myPort);
+            System.out.println("[TS] Socket created, listening on port " + myPort);
+        }
+        catch (IOException ex)
+        {
+            // Log failure to create socket
+            System.out.println("[TS] Failure to create socket" + ex);  
+        }
+        
+        System.out.println("[TS] Listening on " + myIP + ":" + myPort);
+        
         Properties serverProperties = null;
         try
         {
@@ -32,7 +45,7 @@ public class TransactionServer implements Runnable
         }
         catch (IOException ex)
         {
-            System.err.println("Could not open server properties file" + ex);
+            System.err.println("[TS] Could not open server properties file" + ex);
             System.exit(1);
         }
         
@@ -44,7 +57,7 @@ public class TransactionServer implements Runnable
         }
         catch (NumberFormatException ex)
         {
-            System.err.println("Error getting number of accounts: " + ex);
+            System.err.println("[TS] Error getting number of accounts: " + ex);
             System.exit(1);
         }
         
@@ -56,7 +69,7 @@ public class TransactionServer implements Runnable
         }
         catch (NumberFormatException ex)
         {
-            System.err.println("Error getting starting balance: " + ex);
+            System.err.println("[TS] Error getting starting balance: " + ex);
             System.exit(1);
         }
         
@@ -87,19 +100,19 @@ public class TransactionServer implements Runnable
     @Override
     public void run()
     {
-        System.out.println("[TC] Run");
+        System.out.println("[TS] Run");
         
         // run server loop
         while (keepgoing)
         {
             try
             {
-                TransactionManager.runTransaction(clientConnection.accept());
+                transactionManager.runTransaction(clientConnection.accept());
             }
             catch (IOException e)
             {
                 // Log failure to create Socket Thread Object "error accepting client"
-                System.err.println("{RECEIVER} Error accepting client" + e);
+                System.err.println("[TS] Error accepting client" + e);
             }
         }
     }
