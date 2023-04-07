@@ -100,7 +100,7 @@ public class TransactionServer implements Runnable
     public void run()
     {
         System.out.println("[TS] Run");
-        
+     
         // run server loop
         while (keepgoing)
         {
@@ -127,6 +127,7 @@ public class TransactionServer implements Runnable
         {
             serverPropertiesFile = "TransactionServer.properties";
         }
+        System.out.println("[TransactionServer] Initializing..");
         (new TransactionServer(serverPropertiesFile)).run();
     }
 }

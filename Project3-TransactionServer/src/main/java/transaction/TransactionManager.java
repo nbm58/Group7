@@ -38,7 +38,7 @@ public class TransactionManager implements MessageTypes {
     }
     
     // 
-    public synchronized void runTransaction(Socket client)
+    public static synchronized void runTransaction(Socket client)
     {
         (new TransactionManagerWorker(client)).start();
     }
@@ -147,8 +147,81 @@ public class TransactionManager implements MessageTypes {
             }
             catch(Exception e)
             {
+                System.out.println("[TransactionManagerWorker.run] Failed to open object steams");
+                e.printStackTrace();
                 System.out.println("Error: " + e);
+                System.exit(1);
             }
         }
+
+        @Override
+        public void run()
+        {
+         //loop is left when transaction closes
+         while(keepgoing)
+         {
+          //reading message
+          try
+          {
+           message = (Message) readFromNet.readObject();
+          }
+          catch (IOException | ClassNotFoundException e)
+          {
+            System.out.println("[TransactionManagerWorker.run] Message could not be read from obhject stream.");
+            System.exit(1);
+          }
+          //processing message
+          switch(message.getType())
+          {
+            case OPEN_TRANSACTION:
+                synchronized(runningTransactions)
+                {
+                 //assign a new transaction ID, also pass in the last assigned transaction number
+                 //as to the latter, that number may refer to a (prior, non-overlapping) transaction that needed
+                 //to be aborted
+                 transaction = new TransactiotransactionIdCounter, transactionNumberCounter);
+                 runningTransactions.add(transaction);
+                }
+                try
+                {
+                 writeToNet.writeObject(transaction.getTransactionID());
+                }
+                catch (IOException e)
+                {
+                 System.err.println("[TransactionManagerWorker.run] OPEN_TRANSACTION #" + transaction.getTransactionID() + " - Error writing transactionID");
+                }
+
+                transaction.log("[TransactionManagerWorker.run] " + OPEN_COLOR + "OPEN_TRANSACTION" + RESET_COLOR + " #" + transaction.getTransactionID());
+
+                break;
+
+            case CLOSE_TRANSACTION:
+                synchronized(runningTransactions)
+                {
+                    runningTransactions.remove(transaction);
+
+                    if(validateTransaction(transaction))
+                    {
+                     //add this transaction to the committed transactions
+                     committedTransactions.put(transaction.getTransactionNumber(), transaction);
+                    }
+                    try
+                    {
+                    writeToNet.writeObject(transaction.getTransactionID());
+                    }
+                    catch (IOException e)
+                    {
+                    System.err.println("[TransactionManagerWorker.run] OPEN_TRANSACTION #" + transaction.getTransactionID() + " - Error writing transactionID");
+                    }
+
+                    transaction.log("[TransactionManagerWorker.run] " + OPEN_COLOR + "OPEN_TRANSACTION" + RESET_COLOR + " #" + transaction.getTransactionID());
+
+                    break;
+                }
+          }
+         }
+        }
+
+
     }
 }
