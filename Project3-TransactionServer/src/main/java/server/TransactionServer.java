@@ -25,19 +25,6 @@ public class TransactionServer implements Runnable
     {
         transactionManager = new TransactionManager();
         
-        try
-        {
-            clientConnection = new ServerSocket(myPort);
-            System.out.println("[TS] Socket created, listening on port " + myPort);
-        }
-        catch (IOException ex)
-        {
-            // Log failure to create socket
-            System.out.println("[TS] Failure to create socket" + ex);  
-        }
-        
-        System.out.println("[TS] Listening on " + myIP + ":" + myPort);
-        
         Properties serverProperties = null;
         try
         {
@@ -73,6 +60,28 @@ public class TransactionServer implements Runnable
             System.exit(1);
         }
         
+        accountManager = new AccountManager(numberOfAccounts, startingBalance);
+        
+        // get my ip
+        myIP = serverProperties.getProperty("SERVER_IP");
+        if (myIP == null)
+        {
+            System.err.println("[TC] Error getting server IP: ");
+            System.exit(1);
+        }
+        
+        // get my port
+        myPort = 0;
+        try
+        {
+            myPort = Integer.parseInt(serverProperties.getProperty("SERVER_PORT"));
+        }
+        catch (NumberFormatException ex)
+        {
+            System.err.println("[TC] Error getting server port: " + ex);
+            System.exit(1);
+        }
+        
         try
         {
             clientConnection = new ServerSocket(myPort);
@@ -84,17 +93,7 @@ public class TransactionServer implements Runnable
             System.out.println("[TS] Failure to create socket: " + ex);
         }
         
-        accountManager = new AccountManager(numberOfAccounts, startingBalance);
-    }
-    
-    void openTransaction(int transactionID)
-    {
-        
-    }
-    
-    void closeTransaction(int transactionID)
-    {
-        
+        System.out.println("[TS] Listening on " + myIP + ":" + myPort);
     }
     
     @Override
