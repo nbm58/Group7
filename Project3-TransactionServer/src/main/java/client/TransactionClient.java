@@ -29,7 +29,7 @@ public class TransactionClient implements Runnable
         }
         catch (IOException ex)
         {
-            System.err.println("Could not open client properties file" + ex);
+            System.err.println("[TC] Could not open client properties file" + ex);
             System.exit(1);
         }
         
@@ -39,7 +39,7 @@ public class TransactionClient implements Runnable
         }
         catch (IOException ex)
         {
-            System.err.println("Could not open server properties file" + ex);
+            System.err.println("[TC] Could not open server properties file" + ex);
             System.exit(1);
         }
         
@@ -47,7 +47,7 @@ public class TransactionClient implements Runnable
         serverIP = serverProperties.getProperty("SERVER_IP");
         if (serverIP == null)
         {
-            System.err.println("Error getting server IP: ");
+            System.err.println("[TC] Error getting server IP: ");
             System.exit(1);
         }
         
@@ -59,7 +59,7 @@ public class TransactionClient implements Runnable
         }
         catch (NumberFormatException ex)
         {
-            System.err.println("Error getting server port: " + ex);
+            System.err.println("[TC] Error getting server port: " + ex);
             System.exit(1);
         }
         
@@ -71,7 +71,7 @@ public class TransactionClient implements Runnable
         }
         catch (NumberFormatException ex)
         {
-            System.err.println("Error getting number of transactions: " + ex);
+            System.err.println("[TC] Error getting number of transactions: " + ex);
             System.exit(1);
         }
         
@@ -83,7 +83,7 @@ public class TransactionClient implements Runnable
         }
         catch (NumberFormatException ex)
         {
-            System.err.println("Error getting restart transactions flag: " + ex);
+            System.err.println("[TC] Error getting restart transactions flag: " + ex);
             System.exit(1);
         }
         
@@ -95,7 +95,7 @@ public class TransactionClient implements Runnable
         }
         catch (NumberFormatException ex)
         {
-            System.err.println("Error getting number of accounts: " + ex);
+            System.err.println("[TC] Error getting number of accounts: " + ex);
             System.exit(1);
         }
         
@@ -107,22 +107,12 @@ public class TransactionClient implements Runnable
         }
         catch (NumberFormatException ex)
         {
-            System.err.println("Error getting starting balance: " + ex);
+            System.err.println("[TC] Error getting starting balance: " + ex);
             System.exit(1);
         }
         
         accountFrom = (int) (Math.floor(Math.random() * startingBalance));
         accountTo = (int) (Math.floor(Math.random() * startingBalance));
-    }
-    
-    void openTransaction(int transactionID)
-    {
-        
-    }
-    
-    void closeTransaction(int transactionID)
-    {
-        
     }
     
     public class TransactionThread extends Thread implements MessageTypes, Runnable
@@ -137,7 +127,7 @@ public class TransactionClient implements Runnable
         @Override
         public void run()
         {
-            (new TransactionServerProxy(transactionNumber)).run();
+            (new TransactionServerProxy(transactionNumber, serverIP, serverPort)).run();
         }
     }
     
