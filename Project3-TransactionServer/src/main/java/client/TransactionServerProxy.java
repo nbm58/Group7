@@ -7,7 +7,10 @@ import java.net.Socket;
 
 import message.*;
 
-
+//Represents the proxy that acts on behalf of the transaction server on the client side.
+//provides an implementation of the coordinator interface to the client
+//hides the fact that there is a network "inbetween"
+//From a clients perspective, an object of this class IS the transaction.
 public class TransactionServerProxy implements MessageTypes, Runnable
 {
     int transactionNumber;
@@ -57,21 +60,84 @@ public class TransactionServerProxy implements MessageTypes, Runnable
          System.out.println("[TransactionServerProxy.openTranaction] Error when writing/reading messages");
          ex.printStackTrace();   
         }
+        
+        System.out.println("[TS] OPEN received, returning transactionID");
 
         return transactionID;
     }
     
-    void closeTransaction(int transactionID)
+    //Should return either TRANSACTION_COMMITTED or TRANSACTION_ABORTED
+    public int closeTransaction(int transactionID)
     {
+     int returnStatus = TRANSACTION_COMMITTED;
+
         try
         {
-            // close connection
-            serverConnection.close();
+         writeToNet.writeObject(new(Message(CLOSE_TRANSACTION));
+         returnStatus = (Integer) readFromNet.readObject();
+         readFromNet.close();
+         writeToNet.close();
+         serverConnection.close();
         }
         catch (IOException ex)
         {
-            System.err.println("[TSP] Error closing connection to server: " + ex);
+         System.err.println("[TSP] Error closing connection to server: " + ex);
+         ex.printStackTrace();
         }
+
+        return returnStatus;
+    }
+
+    //read a value from an account
+    public int read(int accountNumber) //throws TransactionAbortedException
+    {
+     Message message = new Message(READ_REQUEST, accountNumber);
+
+     try
+     {
+      writeToNet.writeObject(message);
+      message = (Message) readFromNet.readObject;
+     }
+     catch(Exception ex)
+     {
+      System.out.println("TransactionServerProxy.read] Error occured");
+      ex.printStackTrace();  
+     }
+
+     if(message.getType() == READ_REQUEST_RESPONSE)
+     {
+        return (Integer) message.getContent();
+     }
+     else
+     {
+        System.out.println("[TSP] Transaction Aborted Exception Thrown"); 
+      //throw new TransactionAbortedException();      
+     }
+    }
+
+    public void write(int accountNumber, int amount) //throws TransactionAbortedException
+    {
+     Object[] content = new Object[]{accountNumber, amount};
+     Message message = new Message(WRITE_REQUEST,content);
+
+     try
+     {
+      writeToNet.writeObject(message);
+      message = (Message) readFromNet.readObject();
+     }
+     catch (IOEXception | ClassNotFoundException ex)
+     {
+      System.out.println("[TransactionServerProxy.write] Error occured: IOException | ClassNotFoundException");
+      ex.printStackTrace();
+      System.err.print("\n\n");
+     }
+
+     if(message.getType() == TRANSACTION_ABORTED)
+     {
+       System.out.println("[TSP] Transaction Aborted Exception Thrown"); 
+      //throw new TransactionAbortedException();
+     }
+
     }
     
     @Override

@@ -127,6 +127,7 @@ public class TransactionClient implements Runnable
         @Override
         public void run()
         {
+            System.out.println("[TC] Sending transactionThread to TransactionServerProxy");
             (new TransactionServerProxy(transactionNumber, serverIP, serverPort)).run();
         }
     }
