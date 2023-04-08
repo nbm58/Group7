@@ -12,14 +12,16 @@ import java.util.Map;
 import message.*;
 import server.*;
 
+
 public class TransactionManager implements MessageTypes {
+    
     // counter for transactionIDs
     private static int transactionIDCounter = 0;
 
     // lists of transactions
     private static final ArrayList<Transaction> runningTransactions = new ArrayList<>();
     private static final ArrayList<Transaction> abortedTransactions = new ArrayList<>();
-    private static final HashMap<Integer, Transaction> committedTransactions = new HashMap<>(); //specific to OCC
+    private static final HashMap<Integer, Integer> committedTransactions = new HashMap<>(); //specific to OCC
 
 
     // transaction counter number specific to OCC
@@ -101,7 +103,7 @@ public class TransactionManager implements MessageTypes {
     }
 
     //write the write set of a transacton into the operation data
-    public void writeTransaction(Transaction transaction)
+    public static void writeTransaction(Transaction transaction)
     {
         HashMap<Integer, Integer> transactionWriteSet = transaction.getWriteSet();
         int account;
@@ -120,6 +122,7 @@ public class TransactionManager implements MessageTypes {
         }
     }
 
+    //primarily interacts with TransactionServer Proxy, it's "counterpart"
     //objects of this inner class run transaction, one thread runs one transaction on behalf of a client
     public static class TransactionManagerWorker extends Thread
     {
@@ -178,6 +181,9 @@ public class TransactionManager implements MessageTypes {
             case OPEN_TRANSACTION:
                 synchronized(runningTransactions)
                 {
+
+                 System.out.println("[TMW] OPEN_TRANSACTION Request");   
+
                  //assign a new transaction ID, also pass in the last assigned transaction number
                  //as to the latter, that number may refer to a (prior, non-overlapping) transaction that needed
                  //to be aborted
@@ -200,6 +206,7 @@ public class TransactionManager implements MessageTypes {
             case CLOSE_TRANSACTION:
                 synchronized(runningTransactions)
                 {
+                    System.out.println("[TMW] CLOSE_TRANSACTION Request");
                     runningTransactions.remove(transaction);
 
                     if(validateTransaction(transaction))
@@ -218,6 +225,22 @@ public class TransactionManager implements MessageTypes {
 
                     //transaction.log("[TransactionManagerWorker.run] " + OPEN_COLOR + "OPEN_TRANSACTION" + RESET_COLOR + " #" + transaction.getTransactionID());
 
+                    break;
+                }
+
+                case READ_REQUEST:
+                synchronized(runningTransactions)
+                {
+                    System.out.println("[TMW] Read Request");
+
+                    break;
+                }
+
+                case WRITE_REQUEST:
+                synchronized(runningTransactions)
+                {
+                    System.out.println("[TMW] Write Request");
+                    writeTransaction(transaction);
                     break;
                 }
           }
