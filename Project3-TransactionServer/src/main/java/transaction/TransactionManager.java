@@ -38,13 +38,15 @@ public class TransactionManager implements MessageTypes {
     }
     
     // 
-    public static synchronized void runTransaction(Socket client)
+    public synchronized void runTransaction(Socket client)
     {
         (new TransactionManagerWorker(client)).start();
     }
 
-    //validates transactions according to OCC, implementing backwards validation
-    public boolean validateTransaction(Transaction transaction)
+    // validates transactions according to OCC, implementing backwards validation
+    // when validating, the transaction checks its own read set against the 
+    // hashmap/write set(overlapping transactions).
+    public static boolean validateTransaction(Transaction transaction)
     {
         int transactionNumber;
         int lastCommittedTransactionNumber;
@@ -119,7 +121,7 @@ public class TransactionManager implements MessageTypes {
     }
 
     //objects of this inner class run transaction, one thread runs one transaction on behalf of a client
-    public class TransactionManagerWorker extends Thread
+    public static class TransactionManagerWorker extends Thread
     {
         //netowrking communication related fields
         Socket client = null;
@@ -167,7 +169,7 @@ public class TransactionManager implements MessageTypes {
           }
           catch (IOException | ClassNotFoundException e)
           {
-            System.out.println("[TransactionManagerWorker.run] Message could not be read from obhject stream.");
+            System.out.println("[TransactionManagerWorker.run] Message could not be read from object stream.");
             System.exit(1);
           }
           //processing message
@@ -179,7 +181,7 @@ public class TransactionManager implements MessageTypes {
                  //assign a new transaction ID, also pass in the last assigned transaction number
                  //as to the latter, that number may refer to a (prior, non-overlapping) transaction that needed
                  //to be aborted
-                 transaction = new TransactiotransactionIdCounter, transactionNumberCounter);
+                 transaction = new Transaction(++transactionIDCounter, transactionNumberCounter);
                  runningTransactions.add(transaction);
                 }
                 try
@@ -191,7 +193,7 @@ public class TransactionManager implements MessageTypes {
                  System.err.println("[TransactionManagerWorker.run] OPEN_TRANSACTION #" + transaction.getTransactionID() + " - Error writing transactionID");
                 }
 
-                transaction.log("[TransactionManagerWorker.run] " + OPEN_COLOR + "OPEN_TRANSACTION" + RESET_COLOR + " #" + transaction.getTransactionID());
+                //transaction.log("[TransactionManagerWorker.run] " + OPEN_COLOR + "OPEN_TRANSACTION" + RESET_COLOR + " #" + transaction.getTransactionID());
 
                 break;
 
@@ -214,7 +216,7 @@ public class TransactionManager implements MessageTypes {
                     System.err.println("[TransactionManagerWorker.run] OPEN_TRANSACTION #" + transaction.getTransactionID() + " - Error writing transactionID");
                     }
 
-                    transaction.log("[TransactionManagerWorker.run] " + OPEN_COLOR + "OPEN_TRANSACTION" + RESET_COLOR + " #" + transaction.getTransactionID());
+                    //transaction.log("[TransactionManagerWorker.run] " + OPEN_COLOR + "OPEN_TRANSACTION" + RESET_COLOR + " #" + transaction.getTransactionID());
 
                     break;
                 }

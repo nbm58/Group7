@@ -134,10 +134,11 @@ public class TransactionClient implements Runnable
     @Override
     public void run()
     {
-        System.out.println("[TC] Run");
+        System.out.println("[TC] Running TransactionThread");
         
         for (int index = 0; index < numberOfTransactions; index++)
         {
+            //create a new TransactionThread for 0 -> numberofTransactions
             (new TransactionThread(index)).start();
         }
         
@@ -166,7 +167,7 @@ public class TransactionClient implements Runnable
         {
             serverPropertiesFile = "TransactionServer.properties";
         }
-        
+        System.out.println("[TC] creating connection..");
         (new TransactionClient(clientPropertiesFile, serverPropertiesFile)).run();
     }
 }

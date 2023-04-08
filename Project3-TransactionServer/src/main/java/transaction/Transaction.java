@@ -30,12 +30,14 @@ public class Transaction
         //check if value to be read was written by this transaction
         balance = writeSet.get(accountNumber);
 
-        //if not, read the commited version of it
+        //if notyet set, read the commited version of it, and set
         if(balance == null)
         {
+            //balance is = to the balance @ the passed in account #
             balance = TransactionServer.accountManager.read(accountNumber);
         }
 
+        //add the account if it does not exist.
         if(!readSet.contains(accountNumber))
         {
             readSet.add(accountNumber);

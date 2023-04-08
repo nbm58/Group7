@@ -11,9 +11,12 @@ import message.*;
 public class TransactionServerProxy implements MessageTypes, Runnable
 {
     int transactionNumber;
+    Integer transactionID;
     String serverIP;
     int serverPort;
     Socket serverConnection;
+    ObjectOutputStream writeToNet;
+    ObjectInputStream readFromNet;
     
     public TransactionServerProxy(int transactionNumber, String serverIP, int serverPort)
     {
@@ -22,10 +25,9 @@ public class TransactionServerProxy implements MessageTypes, Runnable
         this.serverPort = serverPort;
     }
     
-    void openTransaction()
+    //opens a transaction, OPEN_TRANSACTION returns a transactionID.
+    public int openTransaction()
     {
-        ObjectOutputStream writeToNet;
-        ObjectInputStream readFromNet;
 
         try
         {
@@ -36,14 +38,27 @@ public class TransactionServerProxy implements MessageTypes, Runnable
             writeToNet = new ObjectOutputStream(serverConnection.getOutputStream());
             readFromNet = new ObjectInputStream(serverConnection.getInputStream());
 
-            // Send OPEN_TRANSACTION message
-            writeToNet.writeObject(new Message(OPEN_TRANSACTION));
         }
         catch (IOException ex)
         {
             // Log failure to connect
             System.err.println("[TSP] Error connecting to server, creating object streams, or closing connection: " + ex);
         }
+
+        try
+        {
+         // Send OPEN_TRANSACTION message
+         writeToNet.writeObject(new Message(OPEN_TRANSACTION)); 
+         transactionID = (Integer) readFromNet.readObject();
+
+        }
+        catch(IOException | ClassNotFoundException | NullPointerException ex)
+        {
+         System.out.println("[TransactionServerProxy.openTranaction] Error when writing/reading messages");
+         ex.printStackTrace();   
+        }
+
+        return transactionID;
     }
     
     void closeTransaction(int transactionID)
