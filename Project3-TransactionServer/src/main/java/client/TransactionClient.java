@@ -6,6 +6,9 @@ import java.io.*;
 
 import message.*;
 
+
+// client will create a tsp object and call its r/w, than close it.
+// i think this temporary object is the "middleware"
 public class TransactionClient implements Runnable
 {
     PropertyHandler properties;

@@ -7,10 +7,9 @@ import java.net.Socket;
 
 import message.*;
 
-//Represents the proxy that acts on behalf of the transaction server on the client side.
-//provides an implementation of the coordinator interface to the client
-//hides the fact that there is a network "inbetween"
-//From a clients perspective, an object of this class IS the transaction.
+
+//From the client perspective, an object of this class IS the transaction.
+//TSP "api" is considered Read/Write/Open/Close
 public class TransactionServerProxy implements MessageTypes, Runnable
 {
     int transactionNumber;
@@ -28,7 +27,9 @@ public class TransactionServerProxy implements MessageTypes, Runnable
         this.serverPort = serverPort;
     }
     
-    //opens a transaction, OPEN_TRANSACTION returns a transactionID.
+    // OPEN_TRANSACTION, returns a transactionID.
+    // creating a transactionserverproxy "object", that represents the
+    // transaction
     public int openTransaction()
     {
 
@@ -88,15 +89,19 @@ public class TransactionServerProxy implements MessageTypes, Runnable
         return returnStatus;
     }
 
-    //read a value from an account
-    public int read(int accountNumber) //throws TransactionAbortedException
+
+    /*
+     * Read is translated into a message and broadcast over a network
+     * returns the response
+     */
+    public void read(int accountNumber) //throws TransactionAbortedException
     {
      Message message = new Message(READ_REQUEST, accountNumber);
 
      try
      {
       writeToNet.writeObject(message);
-      message = (Message) readFromNet.readObject;
+      message = (Message) readFromNet.readObject();
      }
      catch(Exception ex)
      {
@@ -125,7 +130,7 @@ public class TransactionServerProxy implements MessageTypes, Runnable
       writeToNet.writeObject(message);
       message = (Message) readFromNet.readObject();
      }
-     catch (IOEXception | ClassNotFoundException ex)
+     catch (IOException | ClassNotFoundException ex)
      {
       System.out.println("[TransactionServerProxy.write] Error occured: IOException | ClassNotFoundException");
       ex.printStackTrace();
