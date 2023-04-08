@@ -16,11 +16,13 @@ public class AccountManager
         }
     }
     
+    //returns account balance from passed in account #
     public int read(int accountNumber)
     {
         return accounts.get(accountNumber).getAccountBalance();
     }
     
+    //sets the balance for the passed in account n#
     public void write(int accountNumber, int newBalance)
     {
         accounts.get(accountNumber).setAccountBalance(newBalance);
