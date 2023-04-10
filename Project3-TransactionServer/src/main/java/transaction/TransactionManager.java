@@ -192,12 +192,15 @@ public class TransactionManager implements MessageTypes {
                 }
                 try
                 {
+                    //return transactionID
                  writeToNet.writeObject(transaction.getTransactionID());
                 }
                 catch (IOException e)
                 {
                  System.err.println("[TransactionManagerWorker.run] OPEN_TRANSACTION #" + transaction.getTransactionID() + " - Error writing transactionID");
                 }
+
+
 
                 //transaction.log("[TransactionManagerWorker.run] " + OPEN_COLOR + "OPEN_TRANSACTION" + RESET_COLOR + " #" + transaction.getTransactionID());
 
@@ -232,6 +235,17 @@ public class TransactionManager implements MessageTypes {
                 synchronized(runningTransactions)
                 {
                     System.out.println("[TMW] Read Request");
+                    
+                    //call read on the transaction(accountManager)
+                    //ACCOUNT MANAGER
+                      //in read determine account pertaining to account#
+                        //issue low level read
+                        //return result to  TMW
+                    //create message containing result
+                    //send back to proxy
+                    
+        
+                    
 
                     break;
                 }
@@ -240,6 +254,15 @@ public class TransactionManager implements MessageTypes {
                 synchronized(runningTransactions)
                 {
                     System.out.println("[TMW] Write Request");
+                    
+                    //call write on the transaction(accountManager)
+                    //ACCOUNT MANAGER
+                      //in write determine account pertaining to account#
+                        //issue low level write
+                        //return result to  TMW
+                    //create message containing result
+                    //send back to proxy
+
                     writeTransaction(transaction);
                     break;
                 }

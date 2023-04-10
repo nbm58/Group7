@@ -144,6 +144,7 @@ public class TransactionClient implements Runnable
         {
             //create a new TransactionThread for 0 -> numberofTransactions
             (new TransactionThread(index)).start();
+            
         }
         
         
