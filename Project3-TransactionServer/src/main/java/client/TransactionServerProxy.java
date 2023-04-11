@@ -74,13 +74,13 @@ public class TransactionServerProxy implements MessageTypes, Runnable
 
         try
         {
-         writeToNet.writeObject(new(Message(CLOSE_TRANSACTION));
+         writeToNet.writeObject(new Message(CLOSE_TRANSACTION));
          returnStatus = (Integer) readFromNet.readObject();
          readFromNet.close();
          writeToNet.close();
          serverConnection.close();
         }
-        catch (IOException ex)
+        catch (IOException | ClassNotFoundException | NullPointerException ex)
         {
          System.err.println("[TSP] Error closing connection to server: " + ex);
          ex.printStackTrace();
@@ -94,7 +94,7 @@ public class TransactionServerProxy implements MessageTypes, Runnable
      * Read is translated into a message and broadcast over a network
      * returns the response
      */
-    public void read(int accountNumber) //throws TransactionAbortedException
+    public int read(int accountNumber) //throws TransactionAbortedException
     {
      Message message = new Message(READ_REQUEST, accountNumber);
 
@@ -116,7 +116,9 @@ public class TransactionServerProxy implements MessageTypes, Runnable
      else
      {
         System.out.println("[TSP] Transaction Aborted Exception Thrown"); 
-      //throw new TransactionAbortedException();      
+      //throw new TransactionAbortedException();  
+      //temp return
+      return 007;    
      }
     }
 
@@ -148,6 +150,6 @@ public class TransactionServerProxy implements MessageTypes, Runnable
     @Override
     public void run()
     {
-        openTransaction();
+       openTransaction();
     }
 }

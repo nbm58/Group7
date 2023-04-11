@@ -21,7 +21,7 @@ public class TransactionManager implements MessageTypes {
     // lists of transactions
     private static final ArrayList<Transaction> runningTransactions = new ArrayList<>();
     private static final ArrayList<Transaction> abortedTransactions = new ArrayList<>();
-    private static final HashMap<Integer, Integer> committedTransactions = new HashMap<>(); //specific to OCC
+    private static final HashMap<Integer, Transaction> committedTransactions = new HashMap<>(); //specific to OCC
 
 
     // transaction counter number specific to OCC
@@ -192,12 +192,15 @@ public class TransactionManager implements MessageTypes {
                 }
                 try
                 {
+                    //return transactionID
                  writeToNet.writeObject(transaction.getTransactionID());
                 }
                 catch (IOException e)
                 {
                  System.err.println("[TransactionManagerWorker.run] OPEN_TRANSACTION #" + transaction.getTransactionID() + " - Error writing transactionID");
                 }
+
+
 
                 //transaction.log("[TransactionManagerWorker.run] " + OPEN_COLOR + "OPEN_TRANSACTION" + RESET_COLOR + " #" + transaction.getTransactionID());
 
@@ -232,6 +235,19 @@ public class TransactionManager implements MessageTypes {
                 synchronized(runningTransactions)
                 {
                     System.out.println("[TMW] Read Request");
+                    
+                    //call read on the transaction(accountManager)
+                    int readBalance = TransactionServer.accountManager.read(accountNumber);
+                    
+                    //ACCOUNT MANAGER
+                      //in read determine account pertaining to account#
+                        //issue low level read
+                        //return result to  TMW
+                    
+                    //create message containing result
+                    System.out.println("[TMW] Balance read: " + readBalance);
+                    
+                    //send back to proxy
 
                     break;
                 }
@@ -240,6 +256,20 @@ public class TransactionManager implements MessageTypes {
                 synchronized(runningTransactions)
                 {
                     System.out.println("[TMW] Write Request");
+                    
+                    //call write on the transaction(accountManager)
+                    TransactionServer.accountManager.write(accountNumber, balance);
+                    
+                    //ACCOUNT MANAGER
+                      //in write determine account pertaining to account#
+                        //issue low level write
+                        //return result to  TMW
+                    
+                    //create message containing result
+                    System.out.println("[TMW] Balance written: " + balance);
+                    
+                    //send back to proxy
+
                     writeTransaction(transaction);
                     break;
                 }
