@@ -59,7 +59,7 @@ public class Satellite extends Thread {
         }
         
         
-        // read properties of the application server and populate serverInfo object
+        /*// read properties of the application server and populate serverInfo object
         // other than satellites, the as doesn't have a human-readable name, so leave it out
         // ...
         try 
@@ -69,13 +69,21 @@ public class Satellite extends Thread {
         catch (UnknownHostException ex) 
         {
             Logger.getLogger(Satellite.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
 
 
         
         // read properties of the code server and create class loader
         // -------------------
         // ...
+	try
+	{
+            classLoader = new HTTPClassLoader(classLoaderPropertiesFile);
+	}
+	catch (IOException e) // TODO: not sure if this is the correct exception. change if needed
+	{
+            Logger.getLogger(classLoaderPropertiesFile).log(Level.SEVERE, null, e);
+	}
         
         
         
