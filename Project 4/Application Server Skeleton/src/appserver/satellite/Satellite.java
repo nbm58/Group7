@@ -53,7 +53,9 @@ public class Satellite extends Thread {
 
         //populate satelliteInfo object
         try {
-            satelliteInfo.setHost(InetAddress.getLocalHost().getHostAddress());
+            satelliteInfo.setHost(Integer.parseInt(satellitePropertiesFile.getProperty("HOST")));
+            satelliteInfo.setPort(Integer.parseInt(satellitePropertiesFile.getProperty("PORT")));
+            satelliteInfo.setName(satellitePropertiesFile.getProperty("NAME"));
         } catch (UnknownHostException ex) {
             Logger.getLogger(Satellite.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -64,7 +66,9 @@ public class Satellite extends Thread {
         // ...
         try 
         {
-            serverInfo.setHost(InetAddress.getLocalHost().getHostAddress());
+            serverInfo.setHost(serverPropertiesFile.getProperty("HOST"));
+            serverInfo.setPort(serverPropertiesFile.getProperty("PORT"));
+            //serverInfo.setName(serverPropertiesFile.getProperty("NAME"));
         } 
         catch (UnknownHostException ex) 
         {
@@ -90,6 +94,7 @@ public class Satellite extends Thread {
         // create tools cache
         // -------------------
         // ...
+        toolsCache = new Hashtable();
         
     }
 
@@ -104,7 +109,7 @@ public class Satellite extends Thread {
         // create server socket
         // ---------------------------------------------------------------
         // ...
-        
+        Socket satteliteRequest = null;
         
         // start taking job requests in a server loop
         // ---------------------------------------------------------------
@@ -129,6 +134,8 @@ public class Satellite extends Thread {
         public void run() {
             // setting up object streams
             // ...
+            ObjectInputStream readFromNet;
+            ObjectOutputStream writeToNet;
             
             // reading message
             // ...
