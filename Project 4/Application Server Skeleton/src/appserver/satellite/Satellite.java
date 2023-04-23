@@ -45,7 +45,6 @@ public class Satellite extends Thread {
         try 
         {
             PropertyHandler satelliteProperties = new PropertyHandler(satellitePropertiesFile);
-            satelliteInfo.setHost(satelliteProperties.getProperty("HOST"));
             satelliteInfo.setPort(Integer.parseInt(satelliteProperties.getProperty("PORT")));
             satelliteInfo.setName(satelliteProperties.getProperty("NAME"));
         } 
@@ -77,7 +76,7 @@ public class Satellite extends Thread {
         // ...
         // Classloader that loads required operations' classes
         
-        String host = satelliteInfo.getHost();
+        String host = serverInfo.getHost();
         int port = satelliteInfo.getPort();
 
         if ((host != null) && (Integer.toString(port) != null)) 
