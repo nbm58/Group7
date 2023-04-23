@@ -1,5 +1,6 @@
 package appserver.satellite;
 
+import utils.PropertyHandler;
 import appserver.job.Job;
 import appserver.comm.ConnectivityInfo;
 import appserver.job.UnknownToolException;
@@ -7,7 +8,6 @@ import appserver.comm.Message;
 import static appserver.comm.MessageTypes.JOB_REQUEST;
 import static appserver.comm.MessageTypes.REGISTER_SATELLITE;
 import appserver.job.Tool;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -34,7 +34,7 @@ public class Satellite extends Thread {
 
     private ConnectivityInfo satelliteInfo = new ConnectivityInfo();
     private ConnectivityInfo serverInfo = new ConnectivityInfo();
-    private HTTPClassLoader classLoader = null;
+    private HTTPClassLoader  classLoader = null;
     private Hashtable toolsCache = null;
 
     public Satellite(String satellitePropertiesFile, String classLoaderPropertiesFile, String serverPropertiesFile) {
@@ -44,19 +44,13 @@ public class Satellite extends Thread {
         // ...
         try {
             PropertyHandler satelliteProperties = new PropertyHandler(satellitePropertiesFile);
+            satelliteInfo.setHost(Integer.parseInt(satelliteProperties.getProperty("HOST")));
+            satelliteInfo.setPort(Integer.parseInt(satelliteProperties.getProperty("PORT")));
+            satelliteInfo.setName(satelliteProperties.getProperty("NAME"));
         } catch (IOException e) {
             // log error
             Logger.getLogger(serverPropertiesFile).log(Level.SEVERE, null, e);
             e.printStackTrace();
-        }
-
-        // populate satelliteInfo object
-        try {
-            satelliteInfo.setHost(Integer.parseInt(satellitePropertiesFile.getProperty("HOST")));
-            satelliteInfo.setPort(Integer.parseInt(satellitePropertiesFile.getProperty("PORT")));
-            satelliteInfo.setName(satellitePropertiesFile.getProperty("NAME"));
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(Satellite.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         // read properties of the application server and populate serverInfo object
@@ -64,8 +58,8 @@ public class Satellite extends Thread {
         // out
         // ...
         try {
-            serverInfo.setHost(serverPropertiesFile.getProperty("HOST"));
-            serverInfo.setPort(serverPropertiesFile.getProperty("PORT"));
+            serverInfo.setHost(Integer.parseInt(satelliteInfo.getProperty("HOST")));
+            serverInfo.setPort(Integer.parseInt(satelliteInfo.getProperty("PORT")));
             // serverInfo.setName(serverPropertiesFile.getProperty("NAME"));
         } catch (UnknownHostException ex) {
             Logger.getLogger(Satellite.class.getName()).log(Level.SEVERE, null, ex);
@@ -74,8 +68,9 @@ public class Satellite extends Thread {
         // read properties of the code server and create class loader
         // -------------------
         // ...
-        try {
-            classLoader = new HTTPClassLoader(classLoaderPropertiesFile);
+        try 
+        {
+        classLoader = new HTTPClassLoader(classLoader);
         } catch (IOException e) // TODO: not sure if this is the correct exception. change if needed
         {
             Logger.getLogger(classLoaderPropertiesFile).log(Level.SEVERE, null, e);
@@ -170,16 +165,18 @@ public class Satellite extends Thread {
 
             // reading message
             // ...
-
             switch (message.getType()) {
                 case JOB_REQUEST:
-                    // processing job request
-                    // ...
-
                     //print message received
                     System.out.println("[SatelliteThread.run] Received job request message");
-                    S
+
+                    String bob = ((Job) message.getContent()).getToolName();
+                    //print bob
+                    System.out.println(bob);
                     
+                    // processing job request
+                    // ...
+                    toolsCache.put(((Job) message.getContent()).getToolName(), ((Job) message.getContent()).getParameters());
 
                     break;
 
