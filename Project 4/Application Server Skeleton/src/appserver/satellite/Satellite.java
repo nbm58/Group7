@@ -42,12 +42,14 @@ public class Satellite extends Thread {
         // read this satellite's properties and populate satelliteInfo object,
         // which later on will be sent to the server
         // ...
-        try {
+        try 
+        {
             PropertyHandler satelliteProperties = new PropertyHandler(satellitePropertiesFile);
-            satelliteInfo.setHost(Integer.parseInt(satelliteProperties.getProperty("HOST")));
             satelliteInfo.setPort(Integer.parseInt(satelliteProperties.getProperty("PORT")));
             satelliteInfo.setName(satelliteProperties.getProperty("NAME"));
-        } catch (IOException e) {
+        } 
+        catch (IOException e) 
+        {
             // log error
             Logger.getLogger(serverPropertiesFile).log(Level.SEVERE, null, e);
             e.printStackTrace();
@@ -57,23 +59,47 @@ public class Satellite extends Thread {
         // other than satellites, the as doesn't have a human-readable name, so leave it
         // out
         // ...
-        try {
-            serverInfo.setHost(Integer.parseInt(satelliteInfo.getProperty("HOST")));
-            serverInfo.setPort(Integer.parseInt(satelliteInfo.getProperty("PORT")));
-            // serverInfo.setName(serverPropertiesFile.getProperty("NAME"));
-        } catch (UnknownHostException ex) {
+         
+        try 
+        {
+         PropertyHandler serverProperties = new PropertyHandler(serverPropertiesFile);
+         serverInfo.setHost(serverProperties.getProperty("HOST"));
+         serverInfo.setPort(Integer.parseInt(serverProperties.getProperty("PORT")));
+         // serverInfo.setName(serverPropertiesFile.getProperty("NAME"));
+        } catch (IOException ex) {
             Logger.getLogger(Satellite.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
 
         // read properties of the code server and create class loader
         // -------------------
         // ...
-        try 
+        // Classloader that loads required operations' classes
+        
+        String host = serverInfo.getHost();
+        int port = satelliteInfo.getPort();
+
+        if ((host != null) && (Integer.toString(port) != null)) 
         {
-        classLoader = new HTTPClassLoader(classLoader);
-        } catch (IOException e) // TODO: not sure if this is the correct exception. change if needed
+            try 
+            {
+                classLoader = new HTTPClassLoader(host,port);
+            } 
+            
+            catch (NumberFormatException nfe) 
+            {
+                System.err.println("Wrong Portnumber, using Defaults");
+            }
+        } 
+        else 
         {
-            Logger.getLogger(classLoaderPropertiesFile).log(Level.SEVERE, null, e);
+            System.err.println("configuration data incomplete, using Defaults");
+        }
+
+        if (classLoader == null) 
+        {
+            System.err.println("Could not create HTTPClassLoader, exiting ...");
+            System.exit(1);
         }
 
         // create tools cache
@@ -81,6 +107,7 @@ public class Satellite extends Thread {
         // ...
         toolsCache = new Hashtable<>();
 
+            
     }
 
     @Override
@@ -204,7 +231,19 @@ public class Satellite extends Thread {
 
     public static void main(String[] args) {
         // start the satellite
-        Satellite satellite = new Satellite(args[0], args[1], args[2]);
+        Satellite satellite = null;
+        //if arguments are not given, use the default properties files
+        if (args.length != 3) 
+        {
+         //TODO: not sure if this is correct
+         satellite = new Satellite("../../config/Satellite.Earth.properties", 
+         "../../config/WebServer.properties", 
+         "../../config/Server.properties");
+        }
+        else
+        {
+         satellite = new Satellite(args[0], args[1], args[2]);   
+        }
         satellite.run();
     }
 }
