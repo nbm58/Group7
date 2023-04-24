@@ -180,8 +180,7 @@ public class Satellite extends Thread {
         public void run() {
             // setting up object streams
             // ...
-
-            //tool stuff involving sats
+            System.out.println("Received and Running " + jobRequest + "And: " + satellite);
             try
             {
              writeToNet = new ObjectOutputStream(jobRequest.getOutputStream());
@@ -202,17 +201,24 @@ public class Satellite extends Thread {
                     //print message received
                     System.out.println("[SatelliteThread.run] Received job request message");
 
-                    String jobRequest = ((Job) message.getContent()).getToolName();
+                    String jobName = ((Job) message.getContent()).getToolName();
                     
                     //probably call the client here somewhere
-
+                    try
+                    {
+                        getToolObject(jobName);
+                    }
+                    catch(UnknownToolException | ClassNotFoundException | InstantiationException 
+                    | IllegalAccessException | InvocationTargetException e)
+                    {
+                        Logger.getLogger(Satellite.class.getName()).log(Level.SEVERE, null, e);
+                        System.out.println("[SatelliteThread.run] Error: Tool not found");
+                    }
 
                     // processing job request
                     // ...
                     toolsCache.put(((Job) message.getContent()).getToolName(), ((Job) message.getContent()).getParameters());
                     System.out.println("[SatelliteThread.run] job added to toolscache");
-                    //print toolscache
-                    System.out.println(toolsCache);
                     break;
 
                 default:
