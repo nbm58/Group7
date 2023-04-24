@@ -139,6 +139,10 @@ public class Satellite extends Thread {
      // start taking job requests in a server loop
      // ---------------------------------------------------------------
      // ...
+
+
+     //make a thread 4/24 
+     //dunno bout the rest, but the idea is right.
      boolean keepgoing = true;
      while (keepgoing) 
      {
@@ -177,6 +181,8 @@ public class Satellite extends Thread {
         public void run() {
             // setting up object streams
             // ...
+
+            //tool stuff involving sats
             try
             {
              writeToNet = new ObjectOutputStream(jobRequest.getOutputStream());
@@ -225,6 +231,9 @@ public class Satellite extends Thread {
         Tool toolObject = null;
 
         // ...
+        //make tool obj
+        //make tool class
+        //try to get from cache, w checks
 
         return toolObject;
     }
