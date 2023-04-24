@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -104,9 +105,9 @@ public class Satellite extends Thread {
 
         // create tools cache
         // -------------------
-        // ...
-        toolsCache = new Hashtable<>();
+        toolsCache = new Hashtable();
 
+        System.out.println("[Satellite] DEBUG satellite created.");
             
     }
 
@@ -117,7 +118,8 @@ public class Satellite extends Thread {
      // ---------------------------------------------------------------
      // ...
 
-     /* TODO: not needed? From Assignment:
+     /* 
+        TODO: not needed? From Assignment:
         Also, you won't be able to register with the application server,
         as it is not there. So ignore this part of the skeleton code, i.e. lines
         62-64. 
@@ -139,9 +141,6 @@ public class Satellite extends Thread {
      // start taking job requests in a server loop
      // ---------------------------------------------------------------
      // ...
-
-
-     //make a thread 4/24 
      //dunno bout the rest, but the idea is right.
      boolean keepgoing = true;
      while (keepgoing) 
@@ -151,14 +150,14 @@ public class Satellite extends Thread {
      try 
      {
       satelliteRequests = satelliteSocket.accept();
+      // create new thread to process job request
+     SatelliteThread satelliteThread = new SatelliteThread(satelliteRequests, this);
+     satelliteThread.start();
      }  
      catch (IOException e) 
      {
       Logger.getLogger(Satellite.class.getName()).log(Level.SEVERE, null, e);
      }
-     // create new thread to process job request
-     SatelliteThread satelliteThread = new SatelliteThread(satelliteRequests, this);
-     satelliteThread.start();
      }
     }
 
@@ -203,14 +202,17 @@ public class Satellite extends Thread {
                     //print message received
                     System.out.println("[SatelliteThread.run] Received job request message");
 
-                    String bob = ((Job) message.getContent()).getToolName();
-                    //print bob
-                    System.out.println(bob);
+                    String jobRequest = ((Job) message.getContent()).getToolName();
                     
+                    //probably call the client here somewhere
+
+
                     // processing job request
                     // ...
                     toolsCache.put(((Job) message.getContent()).getToolName(), ((Job) message.getContent()).getParameters());
-
+                    System.out.println("[SatelliteThread.run] job added to toolscache");
+                    //print toolscache
+                    System.out.println(toolsCache);
                     break;
 
                 default:
@@ -226,14 +228,41 @@ public class Satellite extends Thread {
      * otherwise it is loaded dynamically
      */
     public Tool getToolObject(String toolClassString)
-            throws UnknownToolException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+            throws UnknownToolException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException 
+    {
 
-        Tool toolObject = null;
+                //Class<?> toolObject = null;
+                Tool toolObject;
 
         // ...
         //make tool obj
         //make tool class
         //try to get from cache, w checks
+        if ((toolObject = (Tool)toolsCache.get(toolClassString)) == null) 
+        {
+            String operationClassString = null;
+            System.out.println("\nOperation's Class: " + operationClassString);
+            if (operationClassString == null) 
+            {
+                throw new UnknownToolException();
+            }
+            
+
+            Class<?> operationClass = classLoader.loadClass(operationClassString);
+            try 
+            {
+                toolObject = (Tool) operationClass.getDeclaredConstructor().newInstance();
+            } 
+            catch (NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) 
+            {
+                Logger.getLogger(Satellite.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            toolsCache.put(toolClassString, toolObject);
+        } 
+        else 
+        {
+            System.out.println("Operation: \"" + toolClassString + "\" already in Cache");
+        }
 
         return toolObject;
     }
